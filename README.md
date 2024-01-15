@@ -28,3 +28,12 @@ otus-task12: Jan 15 13:42:24 otus-task12 systemd[1]: Failed to start The nginx H
 otus-task12: Jan 15 13:42:24 otus-task12 systemd[1]: Unit nginx.service entered failed state.
 otus-task12: Jan 15 13:42:24 otus-task12 systemd[1]: nginx.service failed.
 ```
+Убедимся, что отключен файервол и проверим правильность конфигурации nginx:
+[root@otus-task12 ~]# **systemctl status firewalld**
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
+     Docs: man:firewalld(1)
+[root@otus-task12 ~]# **nginx -t**
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
