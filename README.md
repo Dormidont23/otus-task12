@@ -78,3 +78,11 @@ Jan 15 14:49:36 otus-task12 nginx[1480]: nginx: the configuration file /etc/ngin
 Jan 15 14:49:36 otus-task12 nginx[1480]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 Jan 15 14:49:36 otus-task12 systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
+Также работу nginx можно проверить, например, телнетом:\
+[root@otus-task12 ~]# **telnet 127.0.0.1 4881**\
+Trying 127.0.0.1...\
+Connected to 127.0.0.1.\
+Escape character is '^]'.\
+^]\
+telnet> q\
+Connection closed.
