@@ -86,3 +86,15 @@ Escape character is '^]'.\
 ^]\
 telnet> q\
 Connection closed.
+
+Статус параметра nis_enabled можно проверить командой:\
+[root@otus-task12 ~]# **getsebool -a | grep nis_enabled**\
+nis_enabled --> on
+
+Вернём всё, как было, т.е. отключим параметр:\
+[root@otus-task12 ~]# **setsebool -P nis_enabled off**
+
+При попытке перезапапустить nginx, ничего не получается:\
+[root@otus-task12 ~]# **systemctl restart nginx**\
+Job for nginx.service failed because the control process exited with error code. See "systemctl status nginx.service" and "journalctl -xe" for details.
+
