@@ -42,7 +42,7 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 [root@otus-task12 ~]# **getenforce**\
 Enforcing
 
-С помощью утилиты **audit2why** посмотрим, почему трафик блокируется.
+С помощью утилиты **audit2why** посмотрим, почему трафик блокируется.\
 [root@otus-task12 ~]# **cat /var/log/audit/audit.log | grep 4881 | audit2why**
 ```
 type=AVC msg=audit(1705326144.424:693): avc:  denied  { name_bind } for  pid=2557 comm="nginx" src=4881 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0
@@ -58,7 +58,7 @@ type=AVC msg=audit(1705326144.424:693): avc:  denied  { name_bind } for  pid=255
 Утилита подсказывает, что нужно поменять параметр nis_enabled:\
 [root@otus-task12 ~]# **setsebool -P nis_enabled 1**
 
-Перезапустим nginx и посмотрим на его статус:
+Перезапустим nginx и посмотрим на его статус:\
 [root@otus-task12 ~]# **systemctl restart nginx**\
 [root@otus-task12 ~]# **systemctl status nginx**
 ```
