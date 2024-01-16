@@ -142,3 +142,32 @@ Escape character is '^]'.\
 ^]\
 telnet> q\
 Connection closed.
+~Сломаем~ Вернём всё, как было и убедимся, что nginx не работает:\
+[root@otus-task12 ~]# **semanage port -d -t http_port_t -p tcp 4881**\
+[root@otus-task12 ~]# **semanage port -l | grep  http_port_t**
+```
+http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
+pegasus_http_port_t            tcp      5988
+```
+[root@otus-task12 ~]# **systemctl restart nginx**\
+Job for nginx.service failed because the control process exited with error code. See "systemctl status nginx.service" and "journalctl -xe" for details.\
+[root@otus-task12 ~]# **systemctl status nginx**
+```
+● nginx.service - The nginx HTTP and reverse proxy server
+   Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Tue 2024-01-16 07:04:25 UTC; 13s ago
+  Process: 1481 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+  Process: 1521 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=1/FAILURE)
+  Process: 1520 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+ Main PID: 1483 (code=exited, status=0/SUCCESS)
+
+Jan 16 07:04:25 otus-task12 systemd[1]: Stopped The nginx HTTP and reverse proxy server.
+Jan 16 07:04:25 otus-task12 systemd[1]: Starting The nginx HTTP and reverse proxy server...
+Jan 16 07:04:25 otus-task12 nginx[1521]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+Jan 16 07:04:25 otus-task12 nginx[1521]: nginx: [emerg] bind() to 0.0.0.0:4881 failed (13: Permission denied)
+Jan 16 07:04:25 otus-task12 nginx[1521]: nginx: configuration file /etc/nginx/nginx.conf test failed
+Jan 16 07:04:25 otus-task12 systemd[1]: nginx.service: control process exited, code=exited status=1
+Jan 16 07:04:25 otus-task12 systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
+Jan 16 07:04:25 otus-task12 systemd[1]: Unit nginx.service entered failed state.
+Jan 16 07:04:25 otus-task12 systemd[1]: nginx.service failed.
+```
