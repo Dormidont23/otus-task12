@@ -1,15 +1,10 @@
 ## Задание № 12. Практика с SELinux ##
 
-1. Запустить nginx на нестандартном порту тремя разными способами:
+Запустить nginx на нестандартном порту тремя разными способами:
 - переключатели setsebool;
 - добавление нестандартного порта в имеющийся тип;
 - формирование и установка модуля SELinux.
-2. Обеспечить работоспособность приложения при включенном SELinux.
-- развернуть приложенный стенд https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems;
-- выяснить причину неработоспособности механизма обновления зоны;
-- предложить решение для данной проблемы.
 
-### Запустить nginx на нестандартном порту тремя разными способами ###
 Во время развёртывания стенда, при попытке запуска nginx, выдаётся ошибка. Причина - нестандартный порт nginx.
 ```
 otus-task12: Job for nginx.service failed because the control process exited with error code. See "systemctl status nginx.service" and "journalctl -xe" for details.
@@ -41,7 +36,7 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 Проверим режим работы SELinux:\
 [root@otus-task12 ~]# **getenforce**\
 Enforcing
-
+#### Разрешить в SELinux работу nginx на порту TCP 4881 c помощью переключателей setsebool ####
 С помощью утилиты **audit2why** посмотрим, почему трафик блокируется.\
 [root@otus-task12 ~]# **cat /var/log/audit/audit.log | grep 4881 | audit2why**
 ```
@@ -171,4 +166,35 @@ Jan 16 07:04:25 otus-task12 systemd[1]: nginx.service: control process exited, c
 Jan 16 07:04:25 otus-task12 systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
 Jan 16 07:04:25 otus-task12 systemd[1]: Unit nginx.service entered failed state.
 Jan 16 07:04:25 otus-task12 systemd[1]: nginx.service failed.
+```
+#### Разрешить в SELinux работу nginx на порту TCP 4881 c помощью формирования и установки модуля SELinux ####
+Воспользуемся утилитой audit2allow для того, чтобы на основе логов SELinux сделать модуль, разрешающий работу nginx на нестандартном порту:\
+[root@otus-task12 ~]# **grep nginx /var/log/audit/audit.log | audit2allow -M nginx**\
+******************** IMPORTANT ***********************\
+To make this policy package active, execute:
+
+semodule -i nginx.pp
+
+Модуль сформировался. Применим его:\
+[root@otus-task12 ~]# **semodule -i nginx.pp**
+
+Попробуем запустить nginx:\
+[root@otus-task12 ~]# **systemctl start nginx**\
+[root@otus-task12 ~]# **systemctl status nginx**
+```
+● nginx.service - The nginx HTTP and reverse proxy server
+   Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; vendor preset: disabled)
+   Active: active (running) since Tue 2024-01-16 07:18:13 UTC; 6s ago
+  Process: 1575 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+  Process: 1573 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)
+  Process: 1572 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+ Main PID: 1577 (nginx)
+   CGroup: /system.slice/nginx.service
+           ├─1577 nginx: master process /usr/sbin/nginx
+           └─1579 nginx: worker process
+
+Jan 16 07:18:13 otus-task12 systemd[1]: Starting The nginx HTTP and reverse proxy server...
+Jan 16 07:18:13 otus-task12 nginx[1573]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+Jan 16 07:18:13 otus-task12 nginx[1573]: nginx: configuration file /etc/nginx/nginx.conf test is successful
+Jan 16 07:18:13 otus-task12 systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
