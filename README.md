@@ -97,7 +97,7 @@ nis_enabled --> on
 При попытке перезапапустить nginx, ничего не получается:\
 [root@otus-task12 ~]# **systemctl restart nginx**\
 Job for nginx.service failed because the control process exited with error code. See "systemctl status nginx.service" and "journalctl -xe" for details.
-### Разрешить в SELinux работу nginx на порту TCP 4881 c помощью добавления нестандартного порта в имеющийся тип ###
+#### Разрешить в SELinux работу nginx на порту TCP 4881 c помощью добавления нестандартного порта в имеющийся тип ####
 Поиск имеющегося типа, для http трафика:\
 [root@otus-task12 ~]# **semanage port -l | grep http**
 ```
@@ -134,3 +134,11 @@ Jan 16 06:57:16 otus-task12 nginx[1479]: nginx: the configuration file /etc/ngin
 Jan 16 06:57:16 otus-task12 nginx[1479]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 Jan 16 06:57:16 otus-task12 systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
+Проверим работу nginx телнетом:\
+[root@otus-task12 ~]# **telnet 127.0.0.1 4881**\
+Trying 127.0.0.1...\
+Connected to 127.0.0.1.\
+Escape character is '^]'.\
+^]\
+telnet> q\
+Connection closed.
