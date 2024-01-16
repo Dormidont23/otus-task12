@@ -142,6 +142,7 @@ Escape character is '^]'.\
 ^]\
 telnet> q\
 Connection closed.
+
 ~Сломаем~ Вернём всё, как было и убедимся, что nginx не работает:\
 [root@otus-task12 ~]# **semanage port -d -t http_port_t -p tcp 4881**\
 [root@otus-task12 ~]# **semanage port -l | grep  http_port_t**
