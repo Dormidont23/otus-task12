@@ -97,4 +97,40 @@ nis_enabled --> on
 При попытке перезапапустить nginx, ничего не получается:\
 [root@otus-task12 ~]# **systemctl restart nginx**\
 Job for nginx.service failed because the control process exited with error code. See "systemctl status nginx.service" and "journalctl -xe" for details.
+### Разрешить в SELinux работу nginx на порту TCP 4881 c помощью добавления нестандартного порта в имеющийся тип ###
+Поиск имеющегося типа, для http трафика:\
+[root@otus-task12 ~]# **semanage port -l | grep http**
+```
+http_cache_port_t              tcp      8080, 8118, 8123, 10001-10010
+http_cache_port_t              udp      3130
+http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
+pegasus_http_port_t            tcp      5988
+pegasus_https_port_t           tcp      5989
+```
+Добавим порт 4881 в тип http_port_t и посмотрим, что получилось:\
+[root@otus-task12 ~]# **semanage port -a -t http_port_t -p tcp 4881**\
+[root@otus-task12 ~]# **semanage port -l | grep  http_port_t**
+```
+http_port_t                    tcp      4881, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+pegasus_http_port_t            tcp      5988
+```
+Теперь перезапустим nginx и проверим его работу:\
+[root@otus-task12 ~]# **systemctl restart nginx**\
+[root@otus-task12 ~]# **systemctl status nginx**
+```
+● nginx.service - The nginx HTTP and reverse proxy server
+   Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; vendor preset: disabled)
+   Active: active (running) since Tue 2024-01-16 06:57:16 UTC; 6s ago
+  Process: 1481 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+  Process: 1479 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)
+  Process: 1477 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)
+ Main PID: 1483 (nginx)
+   CGroup: /system.slice/nginx.service
+           ├─1483 nginx: master process /usr/sbin/nginx
+           └─1485 nginx: worker process
 
+Jan 16 06:57:16 otus-task12 systemd[1]: Starting The nginx HTTP and reverse proxy server...
+Jan 16 06:57:16 otus-task12 nginx[1479]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+Jan 16 06:57:16 otus-task12 nginx[1479]: nginx: configuration file /etc/nginx/nginx.conf test is successful
+Jan 16 06:57:16 otus-task12 systemd[1]: Started The nginx HTTP and reverse proxy server.
+```
