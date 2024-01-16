@@ -198,3 +198,4 @@ Jan 16 07:18:13 otus-task12 nginx[1573]: nginx: the configuration file /etc/ngin
 Jan 16 07:18:13 otus-task12 nginx[1573]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 Jan 16 07:18:13 otus-task12 systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
+Видно, что nginx запустился без ошибок.
